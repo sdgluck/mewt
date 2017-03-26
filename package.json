@@ -1,0 +1,14 @@
+{
+  "name": "mewt",
+  "version": "1.0.0",
+  "description": "Immutability in under a kilobyte",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "author": "Sam Gluck <sdgluck@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "tape": "^4.6.3"
+  }
+}
