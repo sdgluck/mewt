@@ -1,7 +1,7 @@
 {
   "name": "mewt",
   "version": "1.0.0",
-  "description": "Immutability in under a kilobyte",
+  "description": "Immutability in under one kilobyte",
   "main": "index.js",
   "scripts": {
     "test": "node test"

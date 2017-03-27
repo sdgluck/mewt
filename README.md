@@ -4,7 +4,7 @@
 
 <p><h1 align="center">mewt</h1></p>
 
-<p align="center">:seedling: Immutability in under a kilobyte</p>
+<p align="center">Immutability in under one kilobyte</p>
 
 <p align="center">Made with ❤ at <a href="http://www.twitter.com/outlandish">@outlandish</a></p>
   
@@ -14,7 +14,11 @@
 
 <hr/>
 
-:cookie:  Under 1kb unminified. Zero dependencies.
+:seedling: Under 1kb (unminified), tiny API, zero dependencies.
+
+:+1: Makes all native array methods immutable operations.
+
+:v: Two simple methods `$set` and `$unset` for objects and arrays.
 
 :point_right: Built for Node ES2015 environments. Use a bundler, transpiler, and Proxy polyfill as required.
 
@@ -42,45 +46,72 @@ var immutable = require('mewt')
 
 ## Usage
 
-Create an immutable instance from a JavaScript array or object:
+Create an immutable instance from a JavaScript array or object.
+
+Both objects and arrays have the `$set` and `$unset` methods.
 
 ```js
-let immutableArray = immutable([])
-let immutableObect = immutable({})
+const immutableArray = immutable([])
+const immutableObect = immutable({})
+
+immutableArray[0] = 'Van Morrison' //=> Error "array is immutable"
+immutableObect.name = 'Van Morrison' //=> Error "object is immutable"
 ```
 
 ### Array
 
+Use `$set` and `$unset` to create new array with applied change.
+
+Use all array instance methods as usual, however those that would normally return a single 
+non-array value (pop, push, shift, unshift) will return an array containing the value and a new array
+(see part 2 in example below).
+
 ```js
 const arr = immutable([])
 
-// all array instance methods are available
+// 1. all array instance methods are available
 const arr1 = arr.concat('bubble')
 
-    console.log(arr) //=> ['bubble']
+    console.log(arr1) //=> ['bubble']
     console.log(arr1 === arr) //=> false
 
-// methods with non-array return value also return new 
-// array via destructuring (push, pop, shift, unshift)
+// 2. methods with non-array return value (push, pop, shift, unshift)
+// also return new array, accessible via destructuring
 const [val, arr2] = arr1.pop()
 
     console.log(val) //=> 'bubble'
     console.log(arr2) //=> []
     console.log(arr2 === arr1) //=> false
+    
+// 3. use $set and $unset to get new array with changes
+const arr3 = arr2.$set(0, 'Iggy Pop')
+    
+    console.log(arr3) //=> ['Iggy Pop']
+    console.log(arr3 === arr2) //=> false
 ```
 
 ### Object
 
+Use `$set` and `$unset` to create new object with applied change.
+
 ```js
 const obj = immutable({})
 
-// properties are added/updated using `$set`
-const obj1 = obj.set('album', 'Hunky Dory')
+// 1. properties are added/updated using `$set`
+const obj1 = obj.$set('album', 'Hunky Dory')
 
     console.log(obj1) //=> {album: 'Hunky Dory'}
+    console.log(obj1 === obj) //=> false
 
-// properties are deleted using `$unset`
+// 2. properties are deleted using `$unset`
 const obj2 = obj1.$unset('album')
 
     console.log(obj2) //=> {}
+    console.log(obj2 === obj1) //=> false
 ```
+
+## Contributing
+
+All pull requests and issues welcome!
+
+If you're not sure how, check out the [great video tutorials on egghead.io](http://bit.ly/2aVzthz)!

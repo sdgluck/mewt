@@ -21,6 +21,36 @@ test('array', (t) => {
     t.notEqual(a, n)
   }
   {
+    // throws on mutation
+    const a = mewt([])
+    t.throws(() => a[0] = 'Lodger', /immutable/)
+  }
+  {
+    // has $set & $unset
+    const a = mewt([])
+    t.equal(typeof a.$set, 'function')
+    t.equal(typeof a.$unset, 'function')
+  }
+  {
+    // get own property
+    const a = mewt([''])
+    t.equal(a[0], '')
+  }
+  {
+    // $set
+    const a = mewt([])
+    const n = a.$set(0, '')
+    t.deepEqual(n, [''])
+    t.notEqual(a, n)
+  }
+  {
+    // $unset
+    const a = mewt([''])
+    const n = a.$unset(0)
+    t.deepEqual(n, [])
+    t.notEqual(a, n)
+  }
+  {
     // copyWithin
     const a = mewt([1, 2])
     const n = a.copyWithin(0, 2)
@@ -76,7 +106,7 @@ test('array', (t) => {
     // sort
     const a = mewt(['a', 'b', 'c'])
     const n = a.splice(0, 1)
-    t.deepEqual(n, ['b', 'c'])
+    t.deepEqual(n, ['a'])
     t.notEqual(a, n)
   }
   {
@@ -98,9 +128,36 @@ test('object', (t) => {
     t.notEqual(o, n)
   }
   {
-    //
-    const o = {}
-    const n = mewt(o)
+    // throws on mutation
+    const o = mewt({})
+    t.throws(() => o.track = 'The Promise', /immutable/)
+  }
+  {
+    // has $set & $unset
+    const o = mewt({})
+    t.equal(typeof o.$set, 'function')
+    t.equal(typeof o.$unset, 'function')
+  }
+  {
+    // get own property
+    const o = mewt({album: 'Aladdin Sane'})
+    t.equal(o.album, 'Aladdin Sane')
+  }
+  {
+    // $set
+    const o = mewt({})
+    const n = o.$set('album', 'Hours')
+    console.log(o.album)
+    t.equal(o.album, undefined)
+    t.equal(n.album, 'Hours')
+    t.notEqual(o, n)
+  }
+  {
+    // $unset
+    const o = mewt({album: 'Heroes'})
+    const n = o.$unset('album')
+    t.equal(o.album, 'Heroes')
+    t.equal(n.album, undefined)
     t.notEqual(o, n)
   }
   t.end()
