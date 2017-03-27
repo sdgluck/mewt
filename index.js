@@ -5,8 +5,9 @@ module.exports = function mewt (target) {
     , clone = (v, soft) => (v = isA ? [].concat(v) : Object.assign({}, v), soft ? v : mewt(v))
 
   let override = prop => (...args) => {
-    let res = target[prop](...args)
-    return multiRet.includes(prop) ? [res, clone(target)] : clone(res)
+    let cl = clone(target, true)
+    let res = cl[prop](...args)
+    return multiRet.includes(prop) ? [res, cl] : res
   }
 
   let newObj, api = {

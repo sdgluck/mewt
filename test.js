@@ -68,6 +68,7 @@ test('array', (t) => {
     // pop
     const a = mewt([''])
     const [str, n] = a.pop()
+    t.deepEqual(a, [''])
     t.equal(str, '')
     t.deepEqual(n, [])
     t.notEqual(a, n)
