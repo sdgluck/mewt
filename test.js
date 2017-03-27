@@ -148,7 +148,6 @@ test('object', (t) => {
     // $set
     const o = mewt({})
     const n = o.$set('album', 'Hours')
-    console.log(o.album)
     t.equal(o.album, undefined)
     t.equal(n.album, 'Hours')
     t.notEqual(o, n)
