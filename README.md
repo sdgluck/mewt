@@ -14,7 +14,7 @@
 
 <hr/>
 
-:seedling: Under 1kb (unminified), tiny API, zero dependencies.
+:seedling: Under 1kb, tiny API, zero dependencies.
 
 :+1: Makes all native array methods immutable operations.
 

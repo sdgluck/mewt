@@ -2,15 +2,19 @@
   "name": "mewt",
   "version": "1.0.2",
   "description": "Immutability in under one kilobyte",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "node test",
-    "filesize": "node -e \"console.log(require('fs').statSync('index.js').size + ' bytes')\"",
-    "assertfilesize": "node -e \"require('assert')((require('fs').statSync('index.js').size) < 1024, 'file size exceeds 1KB')\""
+    "build": "rimraf lib && babili index.js -d lib",
+    "test": "npm run build && node test.js",
+    "prepublishOnly": "npm run build",
+    "filesize": "node -e \"console.log(require('fs').statSync('lib/index.js').size + ' bytes')\"",
+    "assertfilesize": "node -e \"require('assert')((require('fs').statSync('lib/index.js').size) < 1024, 'file size exceeds 1KB')\""
   },
   "author": "Sam Gluck <sdgluck@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babili": "0.0.12",
+    "rimraf": "^2.6.1",
     "tape": "^4.6.3"
   }
 }
