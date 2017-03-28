@@ -52,10 +52,10 @@ Both objects and arrays have the `$set` and `$unset` methods.
 
 ```js
 const immutableArray = immutable([])
-const immutableObect = immutable({})
+const immutableObject = immutable({})
 
 immutableArray[0] = 'Van Morrison' //=> Error "array is immutable"
-immutableObect.name = 'Van Morrison' //=> Error "object is immutable"
+immutableObject.name = 'Van Morrison' //=> Error "object is immutable"
 ```
 
 ### Array
