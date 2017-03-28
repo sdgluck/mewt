@@ -1,26 +1,33 @@
 const multiRet = ['push', 'pop', 'shift', 'unshift']
+const mutArrMethods = ['reverse', 'sort', 'splice', 'fill', 'copyWithin']
+const nonMutArrMethods = ['filter', 'map', 'concat', 'slice']
 
 /** @returns {Array|Object} */
-module.exports = function mewt(target) {
+function mewt(target) {
   const isA = Array.isArray(target)
   const clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
 
   const override = prop => (...args) => {
-    const cl = clone(target)
+    const mutMethod = mutArrMethods.includes(prop)
+    const nonMutMethod = nonMutArrMethods.includes(prop)
+
+    const cl = nonMutMethod ? target : clone(target)
     const res = cl[prop](...args)
-    return multiRet.includes(prop) ? [res, cl] : res
+    const wrappedRes = (mutMethod || nonMutMethod) ? mewt(res) : res
+    
+    return multiRet.includes(prop) ? [wrappedRes, mewt(cl)] : wrappedRes
   }
 
   const api = {
     $set: (prop, val) => {
       const newObj = clone(target)
       newObj[prop] = val
-      return newObj
+      return mewt(newObj)
     },
     $unset: prop => {
       const newObj = clone(target)
       delete newObj[prop]
-      return newObj
+      return mewt(newObj)
     }
   }
 
@@ -40,3 +47,5 @@ module.exports = function mewt(target) {
     }
   })
 }
+
+module.exports = mewt
