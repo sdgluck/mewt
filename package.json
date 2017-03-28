@@ -4,7 +4,9 @@
   "description": "Immutability in under one kilobyte",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "test": "node test",
+    "filesize": "node -e \"console.log(require('fs').statSync('index.js').size + ' bytes')\"",
+    "assertfilesize": "node -e \"require('assert')((require('fs').statSync('index.js').size) < 1024, 'file size exceeds 1KB')\""
   },
   "author": "Sam Gluck <sdgluck@gmail.com>",
   "license": "MIT",
