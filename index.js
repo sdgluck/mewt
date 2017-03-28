@@ -2,7 +2,7 @@
 module.exports = function mewt (target) {
   let isA = Array.isArray(target)
     , multiRet = 'push pop shift unshift'
-    , clone = v => (v = isA ? [].concat(v) : Object.assign({}, v), v)
+    , clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
 
   let override = prop => (...args) => {
     let cl = clone(target)
