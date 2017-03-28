@@ -1,7 +1,8 @@
+const multiRet = ['push', 'pop', 'shift', 'unshift']
+
 /** @returns {Array|Object} */
 module.exports = function mewt(target) {
   const isA = Array.isArray(target)
-  const multiRet = 'push pop shift unshift'
   const clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
 
   const override = prop => (...args) => {
