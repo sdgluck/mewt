@@ -51,6 +51,13 @@ test('array', (t) => {
     t.notEqual(a, n)
   }
   {
+    // natives return mewt
+    const a = mewt([1])
+    const n = a.map(i => i + 1)
+    t.equal(n[0], 2)
+    t.equal(typeof n.$set, 'function')
+  }
+  {
     // copyWithin
     const a = mewt([1, 2])
     const n = a.copyWithin(0, 2)
@@ -151,6 +158,7 @@ test('object', (t) => {
     t.equal(o.album, undefined)
     t.equal(n.album, 'Hours')
     t.notEqual(o, n)
+    t.equal(typeof n.$set, 'function')
   }
   {
     // $unset
@@ -159,6 +167,7 @@ test('object', (t) => {
     t.equal(o.album, 'Heroes')
     t.equal(n.album, undefined)
     t.notEqual(o, n)
+    t.equal(typeof n.$unset, 'function')
   }
   t.end()
 })
