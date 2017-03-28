@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('tape')
-const mewt = require('./lib')
+const mewt = require('./index')
 
 test('exports a function', (t) => {
   t.equal(typeof mewt, 'function')
