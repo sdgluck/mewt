@@ -1,30 +1,51 @@
 /** @returns {Array|Object} */
-module.exports = function mewt (target) {
-  let isA = Array.isArray(target)
-    , multiRet = 'push pop shift unshift'
-    , clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
+function mewt(target) {
+  const multiRet = 'push pop shift unshift'
+  const mutArrMethods = 'reverse sort splice fill copyWithin'
+  const nonMutArrMethods = 'filter map concat slice'
+  
+  const isA = Array.isArray(target)
+  const clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
 
-  let override = prop => (...args) => {
-    let cl = clone(target)
-    let res = cl[prop](...args)
-    return multiRet.includes(prop) ? [res, cl] : res
+  const override = prop => (...args) => {
+    const mutMethod = mutArrMethods.includes(prop)
+    const nonMutMethod = nonMutArrMethods.includes(prop)
+
+    const cl = nonMutMethod ? target : clone(target)
+    const res = cl[prop](...args)
+    const wrappedRes = (mutMethod || nonMutMethod) ? mewt(res) : res
+    
+    return multiRet.includes(prop) ? [wrappedRes, mewt(cl)] : wrappedRes
   }
 
-  let newObj, api = {
-    $set: (prop, val) => (newObj = clone(target), newObj[prop] = val, newObj),
-    $unset: prop => (newObj = clone(target), delete newObj[prop], newObj)
+  const api = {
+    $set: (prop, val) => {
+      const newObj = clone(target)
+      newObj[prop] = val
+      return mewt(newObj)
+    },
+    $unset: prop => {
+      const newObj = clone(target)
+      delete newObj[prop]
+      return mewt(newObj)
+    }
   }
 
-  if (!isA && typeof target !== 'object')
+  if (!isA && typeof target !== 'object') {
     throw new Error('mewt accepts array or object')
+  }
 
   return new Proxy(target, {
     set: () => {
       throw new Error(`${isA ? 'array' : 'object'} is immutable`)
     },
     get: (_, prop) => {
-      if (api[prop]) return api[prop]
+      if (api[prop]) {
+        return api[prop]
+      }
       return target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop))
     }
   })
 }
+
+module.exports = mewt

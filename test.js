@@ -3,6 +3,11 @@
 const test = require('tape')
 const mewt = require('./lib')
 
+const createAssertMewt = t => input => {
+  t.equal(typeof input.$set, 'function')
+  t.equal(typeof input.$unset, 'function')
+}
+
 test('exports a function', (t) => {
   t.equal(typeof mewt, 'function')
   t.end()
@@ -14,6 +19,7 @@ test('throws without object or array', (t) => {
 })
 
 test('array', (t) => {
+  const assertMewt = createAssertMewt(t)
   {
     // returns new array
     const a = []
@@ -28,8 +34,7 @@ test('array', (t) => {
   {
     // has $set & $unset
     const a = mewt([])
-    t.equal(typeof a.$set, 'function')
-    t.equal(typeof a.$unset, 'function')
+    assertMewt(a)
   }
   {
     // get own property
@@ -42,6 +47,7 @@ test('array', (t) => {
     const n = a.$set(0, '')
     t.deepEqual(n, [''])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // $unset
@@ -49,6 +55,7 @@ test('array', (t) => {
     const n = a.$unset(0)
     t.deepEqual(n, [])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // copyWithin
@@ -56,6 +63,7 @@ test('array', (t) => {
     const n = a.copyWithin(0, 2)
     t.deepEqual(n, [1, 2])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // fill
@@ -63,6 +71,7 @@ test('array', (t) => {
     const n = a.fill('')
     t.deepEqual(n, [''])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // pop
@@ -72,6 +81,7 @@ test('array', (t) => {
     t.equal(str, '')
     t.deepEqual(n, [])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // push
@@ -80,6 +90,7 @@ test('array', (t) => {
     t.equal(1, len)
     t.deepEqual(n, [''])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // reverse
@@ -87,6 +98,7 @@ test('array', (t) => {
     const n = a.reverse()
     t.deepEqual(n, [2, 1])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // shift
@@ -95,6 +107,7 @@ test('array', (t) => {
     t.equal(num, 1)
     t.deepEqual(n, [2])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // sort
@@ -102,6 +115,7 @@ test('array', (t) => {
     const n = a.sort()
     t.deepEqual(n, ['a', 'b', 'c'])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // sort
@@ -109,6 +123,7 @@ test('array', (t) => {
     const n = a.splice(0, 1)
     t.deepEqual(n, ['a'])
     t.notEqual(a, n)
+    assertMewt(n)
   }
   {
     // unshift
@@ -117,11 +132,44 @@ test('array', (t) => {
     t.equal(len, 2)
     t.deepEqual(n, [1, 2])
     t.notEqual(a, n)
+    assertMewt(n)
+  }
+  {
+    // filter
+    const a = mewt([1, 2, 3, 4, 5])
+    const filtered = a.filter(e => e % 2 === 0)
+    t.deepEqual(filtered, [2, 4])
+    assertMewt(filtered)
+  }
+  {
+    // map
+    const a = mewt([1, 2, 3, 4, 5])
+    const transformed = a.map(e => e * 2)
+    t.deepEqual(transformed, [2, 4, 6, 8, 10])
+    assertMewt(transformed)
+  }
+  {
+    // concat
+    const a = mewt([1, 2]).concat([3, 4, 5])
+    t.deepEqual(a, [1, 2, 3, 4, 5])
+    assertMewt(a)
+
+    const b = mewt([5, 4]).concat(mewt([3, 2, 1]))
+    t.deepEqual(b, [5, 4, 3, 2, 1])
+    assertMewt(b)
+  }
+  {
+    // slice
+    const a = mewt([1, 2, 3, 4, 5])
+    const sliced = a.slice(1, 4)
+    t.deepEqual(sliced, [2, 3, 4])
+    assertMewt(sliced)
   }
   t.end()
 })
 
 test('object', (t) => {
+  const assertMewt = createAssertMewt(t)
   {
     // returns new object
     const o = {}
@@ -136,12 +184,11 @@ test('object', (t) => {
   {
     // has $set & $unset
     const o = mewt({})
-    t.equal(typeof o.$set, 'function')
-    t.equal(typeof o.$unset, 'function')
+    assertMewt(o)
   }
   {
     // get own property
-    const o = mewt({album: 'Aladdin Sane'})
+    const o = mewt({ album: 'Aladdin Sane' })
     t.equal(o.album, 'Aladdin Sane')
   }
   {
@@ -154,7 +201,7 @@ test('object', (t) => {
   }
   {
     // $unset
-    const o = mewt({album: 'Heroes'})
+    const o = mewt({ album: 'Heroes' })
     const n = o.$unset('album')
     t.equal(o.album, 'Heroes')
     t.equal(n.album, undefined)
