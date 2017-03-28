@@ -7,12 +7,13 @@ module.exports = function mewt (target) {
   let override = prop => (...args) => {
     let cl = clone(target)
     let res = cl[prop](...args)
-    return multiRet.includes(prop) ? [res, cl] : res
+    if (multiRet.includes(prop)) return [res, mewt(cl)]
+    return Array.isArray(res) ? mewt(res) : res
   }
 
   let newObj, api = {
-    $set: (prop, val) => (newObj = clone(target), newObj[prop] = val, newObj),
-    $unset: prop => (newObj = clone(target), delete newObj[prop], newObj)
+    $set: (prop, val) => (newObj = clone(target), newObj[prop] = val, mewt(newObj)),
+    $unset: prop => (newObj = clone(target), delete newObj[prop], mewt(newObj))
   }
 
   if (!isA && typeof target !== 'object')
