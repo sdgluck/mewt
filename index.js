@@ -24,7 +24,7 @@ module.exports = function mewt (target) {
     },
     get: (_, prop) => {
       if (api[prop]) return api[prop]
-      return target[prop] && (target.hasOwnProperty(prop) ? target[prop] : override(prop))
+      return target[prop] && (Object.prototype.hasOwnProperty.call(target, prop) ? target[prop] : override(prop))
     }
   })
 }
