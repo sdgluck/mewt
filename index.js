@@ -10,15 +10,14 @@ module.exports = function mewt(target) {
     return multiRet.includes(prop) ? [res, cl] : res
   }
 
-  let newObj
   const api = {
     $set: (prop, val) => {
-      newObj = clone(target)
+      const newObj = clone(target)
       newObj[prop] = val
       return newObj
     },
     $unset: prop => {
-      newObj = clone(target)
+      const newObj = clone(target)
       delete newObj[prop]
       return newObj
     }
