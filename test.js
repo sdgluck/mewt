@@ -6,7 +6,6 @@ const mewt = require('./lib')
 const createAssertMewt = t => input => {
   t.equal(typeof input.$set, 'function')
   t.equal(typeof input.$unset, 'function')
-  // TODO any other way to test? Cannot check if instanceof Proxy
 }
 
 test('exports a function', (t) => {

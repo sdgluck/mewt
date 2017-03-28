@@ -1,9 +1,9 @@
-const multiRet = ['push', 'pop', 'shift', 'unshift']
-const mutArrMethods = ['reverse', 'sort', 'splice', 'fill', 'copyWithin']
-const nonMutArrMethods = ['filter', 'map', 'concat', 'slice']
-
 /** @returns {Array|Object} */
 function mewt(target) {
+  const multiRet = 'push pop shift unshift'
+  const mutArrMethods = 'reverse sort splice fill copyWithin'
+  const nonMutArrMethods = 'filter map concat slice'
+  
   const isA = Array.isArray(target)
   const clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
 
