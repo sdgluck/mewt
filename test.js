@@ -17,9 +17,36 @@ describe('mewt', () => {
     it('should export a function', () => {
       expect(typeof mewt).toBe('function')
     })
+  })
 
-    it('should throw without object or array', () => {
+  describe('should throw without object or array type', () => {
+    it('should throw when undefined given', () => {
       expect(() => mewt()).toThrowError(/accepts array or object/)
+    })
+
+    it('should throw when null given', () => {
+      expect(() => mewt(null)).toThrowError(/accepts array or object/)
+    })
+    
+    it('should throw when string given', () => {
+      expect(() => mewt('foo')).toThrowError(/accepts array or object/)
+    })
+    
+    it('should throw when number given', () => {
+      expect(() => mewt(123)).toThrowError(/accepts array or object/)
+    })
+    
+    it('should throw when boolean given', () => {
+      expect(() => mewt(true)).toThrowError(/accepts array or object/)
+      expect(() => mewt(false)).toThrowError(/accepts array or object/)
+    })
+    
+    it('should throw when function given', () => {
+      expect(() => mewt(() => { })).toThrowError(/accepts array or object/)
+    })
+    
+    it('should throw when Symbol given', () => {
+      expect(() => mewt(Symbol('foo'))).toThrowError(/accepts array or object/)
     })
   })
 
