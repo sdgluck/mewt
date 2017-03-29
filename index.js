@@ -25,9 +25,6 @@ function mewt(target) {
       return mewt(newObj)
     },
     $unset (prop) {
-      if (isA && Number.isInteger(prop)) {
-        return mewt([...target.slice(0, prop), ...target.slice(prop + 1)])
-      }
       const newObj = clone(target)
       delete newObj[prop]
       return mewt(newObj)

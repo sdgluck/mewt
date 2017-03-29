@@ -76,7 +76,7 @@ describe('mewt', () => {
       assertMewt(n)
     })
 
-    it('should properly $unset at index', () => {
+    xit('should properly $unset at index', () => {
       const a = mewt([''])
       const n = a.$unset(0)
       expect(n).toEqual([])
