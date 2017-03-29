@@ -110,6 +110,12 @@ const obj2 = obj1.$unset('album')
     console.log(obj2 === obj1) //=> false
 ```
 
+## Contributors
+
+`mewt` has received contributions from these wonderful people:
+
+[Balázs Édes](https://github.com/bali182), [Scott Humphries](https://github.com/sscotth), [Michael J. Ryan](https://github.com/tracker1), [Jamie Curtis](https://github.com/jcurtis)
+
 ## Contributing
 
 All pull requests and issues welcome!
