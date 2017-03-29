@@ -5,7 +5,7 @@ function mewt(target) {
   const nonMutArrMethods = 'filter map concat slice'
   
   const isA = Array.isArray(target)
-  const clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
+  const clone = isA ? v => [...v] : v => Object.assign({}, v)
 
   const override = prop => (...args) => {
     const mutMethod = mutArrMethods.includes(prop)
@@ -19,12 +19,12 @@ function mewt(target) {
   }
 
   const api = {
-    $set: (prop, val) => {
+    $set (prop, val) {
       const newObj = clone(target)
       newObj[prop] = val
       return mewt(newObj)
     },
-    $unset: prop => {
+    $unset (prop) {
       const newObj = clone(target)
       delete newObj[prop]
       return mewt(newObj)
@@ -36,14 +36,11 @@ function mewt(target) {
   }
 
   return new Proxy(target, {
-    set: () => {
+    set () {
       throw new Error(`${isA ? 'array' : 'object'} is immutable`)
     },
-    get: (_, prop) => {
-      if (api[prop]) {
-        return api[prop]
-      }
-      return target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop))
+    get (_, prop) {
+      return api[prop] || target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop))
     }
   })
 }
