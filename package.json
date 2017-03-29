@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "rimraf lib && babili index.js -d lib",
-    "test": "npm run build && node test.js",
+    "test": "npm run build && jest",
     "prepublishOnly": "npm run build",
     "filesize": "node -e \"console.log(require('fs').statSync('lib/index.js').size + ' bytes')\"",
     "assertfilesize": "node -e \"require('assert')((require('fs').statSync('lib/index.js').size) < 1024, 'file size exceeds 1KB')\""
@@ -14,7 +14,10 @@
   "license": "MIT",
   "devDependencies": {
     "babili": "0.0.12",
-    "rimraf": "^2.6.1",
-    "tape": "^4.6.3"
+    "jest": "^19.0.2",
+    "rimraf": "^2.6.1"
+  },
+  "jest": {
+    "testRegex": "test.js"
   }
 }
