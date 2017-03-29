@@ -205,6 +205,29 @@ describe('mewt', () => {
       expect(() => o.track = 'The Promise').toThrowError(/immutable/)
     })
 
+    it('should throw on Object.defineProperty', () => {
+      const o = mewt({})
+      expect(() => {
+        Object.defineProperty(o, 'foo', {
+          value: 'bar'
+        })
+      }).toThrowError(/immutable/)
+    })
+
+    it('should throw on delete', () => {
+      const o = mewt({})
+      expect(() => {
+        delete o.foo
+      }).toThrowError(/immutable/)
+    })
+
+    it('should throw on setPrototypeOf', () => {
+      const o = mewt({})
+      expect(() => {
+        Object.setPrototypeOf(o, {bar: 'baz'})
+      }).toThrowError(/immutable/)
+    })    
+
     it('should have $set & $unset', () => {
       const o = mewt({})
       assertMewt(o)
