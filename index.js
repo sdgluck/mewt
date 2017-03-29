@@ -3,7 +3,7 @@ function mewt(target) {
   const multiRet = 'push pop shift unshift'
   const mutArrMethods = 'reverse sort splice fill copyWithin'
   const nonMutArrMethods = 'filter map concat slice'
-  
+
   const isA = Array.isArray(target)
   const clone = isA ? v => [].concat(v) : v => Object.assign({}, v)
 
@@ -14,7 +14,7 @@ function mewt(target) {
     const cl = nonMutMethod ? target : clone(target)
     const res = cl[prop](...args)
     const wrappedRes = (mutMethod || nonMutMethod) ? mewt(res) : res
-    
+
     return multiRet.includes(prop) ? [wrappedRes, mewt(cl)] : wrappedRes
   }
 
@@ -25,6 +25,9 @@ function mewt(target) {
       return mewt(newObj)
     },
     $unset: prop => {
+      if (isA && Number.isInteger(prop)) {
+        return mewt([...target.slice(0, prop), ...target.slice(prop + 1)])
+      }
       const newObj = clone(target)
       delete newObj[prop]
       return mewt(newObj)
