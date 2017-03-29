@@ -13,8 +13,35 @@ test('exports a function', (t) => {
   t.end()
 })
 
-test('throws without object or array', (t) => {
-  t.throws(() => mewt(), /accepts array or object/)
+test('throws without object or array type', (t) => {
+  {
+    // undefined
+    t.throws(() => mewt(), /accepts array or object/)
+  }
+  {
+    // null
+    t.throws(() => mewt(null), /accepts array or object/)
+  }
+  {
+    // string
+    t.throws(() => mewt('foo'), /accepts array or object/)
+  }
+  {
+    // number
+    t.throws(() => mewt(123), /accepts array or object/)
+  }
+  {
+    // boolean
+    t.throws(() => mewt(true), /accepts array or object/)
+  }
+  {
+    // function
+    t.throws(() => mewt(() => {}), /accepts array or object/)
+  }
+  {
+    // symbol
+    t.throws(() => mewt(true), /accepts array or object/)
+  }
   t.end()
 })
 

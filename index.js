@@ -31,7 +31,7 @@ function mewt(target) {
     }
   }
 
-  if (!isA && typeof target !== 'object') {
+  if (typeof target !== 'object' || !target) {
     throw new Error('mewt accepts array or object')
   }
 
