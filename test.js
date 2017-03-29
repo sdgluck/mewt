@@ -2,11 +2,6 @@
 
 const mewt = require('./lib')
 
-const assertMewt = input => {
-  expect(typeof input.$set).toBe('function')
-  expect(typeof input.$unset).toBe('function')
-}
-
 describe('mewt', () => {
   const assertMewt = input => {
     expect(typeof input.$set).toBe('function')
