@@ -3,6 +3,7 @@ node_js:
   - "6.9"
 script:
   - npm run assertfilesize
+# - npm run lint
   - npm test
 notifications:
   email: false
