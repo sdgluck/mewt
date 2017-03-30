@@ -7,7 +7,7 @@
     "build": "rimraf lib && babili index.js -d lib",
     "lint": "eslint index.js",
     "test": "npm run build && jest",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run lint && npm run build",
     "filesize": "node -e \"console.log(require('fs').statSync('lib/index.js').size + ' bytes')\"",
     "assertfilesize": "node -e \"require('assert')((require('fs').statSync('lib/index.js').size) < 1024, 'file size exceeds 1KB')\""
   },
