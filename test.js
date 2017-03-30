@@ -22,24 +22,24 @@ describe('mewt', () => {
     it('should throw when null given', () => {
       expect(() => mewt(null)).toThrowError(/accepts array or object/)
     })
-    
+
     it('should throw when string given', () => {
       expect(() => mewt('foo')).toThrowError(/accepts array or object/)
     })
-    
+
     it('should throw when number given', () => {
       expect(() => mewt(123)).toThrowError(/accepts array or object/)
     })
-    
+
     it('should throw when boolean given', () => {
       expect(() => mewt(true)).toThrowError(/accepts array or object/)
       expect(() => mewt(false)).toThrowError(/accepts array or object/)
     })
-    
+
     it('should throw when function given', () => {
       expect(() => mewt(() => { })).toThrowError(/accepts array or object/)
     })
-    
+
     it('should throw when Symbol given', () => {
       expect(() => mewt(Symbol('foo'))).toThrowError(/accepts array or object/)
     })
@@ -76,12 +76,21 @@ describe('mewt', () => {
       assertMewt(n)
     })
 
-    xit('should properly $unset at index', () => {
+    it('should properly $unset at index', () => {
       const a = mewt([''])
       const n = a.$unset(0)
       expect(n).toEqual([])
       expect(a).not.toBe(n)
       assertMewt(n)
+    })
+
+    it('should properly $unset negative indexes and string keys', () => {
+      const a = mewt([1, 2, 3])
+      const n = a.$set('foo', 'bar')
+        .$set(-1, 42)
+        .$unset(-1)
+        .$unset('foo')
+      expect(n).toEqual([1, 2, 3])
     })
 
     it('should copyWithin without mutation', () => {
@@ -224,9 +233,9 @@ describe('mewt', () => {
     it('should throw on setPrototypeOf', () => {
       const o = mewt({})
       expect(() => {
-        Object.setPrototypeOf(o, {bar: 'baz'})
+        Object.setPrototypeOf(o, { bar: 'baz' })
       }).toThrowError(/immutable/)
-    })    
+    })
 
     it('should have $set & $unset', () => {
       const o = mewt({})
@@ -252,6 +261,12 @@ describe('mewt', () => {
       expect(o.album).toBe('Heroes')
       expect(n.album).toBeUndefined()
       expect(o).not.toBe(n)
+    })
+
+    it('should properly $unset numeric indexes', () => {
+      const o = mewt({ foo: 'bar', 0: 'foo', 1: 'bar' })
+      expect(o.$unset(0)).toEqual({ foo: 'bar', 1: 'bar' })
+      expect(o.$unset(1)).toEqual({ foo: 'bar', 0: 'foo' })
     })
   })
 })
