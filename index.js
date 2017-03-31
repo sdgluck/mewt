@@ -1,10 +1,10 @@
 /** @returns {Array|Object} */
-function mewt(target) {
+function mewt (target) {
   const multiRet = 'push pop shift unshift'
   const mutArrMethods = 'reverse sort splice fill copyWithin'
   const nonMutArrMethods = 'filter map concat slice'
   const mutationTraps = ['setPrototypeOf', 'defineProperty', 'deleteProperty']
-  
+
   const isA = Array.isArray(target)
   const clone = isA ? v => [...v] : v => Object.assign({}, v)
 
@@ -45,7 +45,7 @@ function mewt(target) {
 
   let proxyHandler = {
     get: (_, prop) => {
-      return api[prop] || target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop))
+      return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
     }
   }
 
