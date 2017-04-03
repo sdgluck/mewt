@@ -53,6 +53,8 @@ function mewt (target) {
     proxyHandler[key] = mutationTrapError
   })
 
+  target = clone(target)
+
   return new Proxy(target, proxyHandler)
 }
 

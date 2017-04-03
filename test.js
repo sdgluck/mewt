@@ -268,5 +268,12 @@ describe('mewt', () => {
       expect(o.$unset(0)).toEqual({ foo: 'bar', 1: 'bar' })
       expect(o.$unset(1)).toEqual({ foo: 'bar', 0: 'foo' })
     })
+
+    it('should handle changes to the pre-mewted object', () => {
+      const a = ['foo']
+      const b = mewt(a)
+      a.push('bar')
+      expect(b).toEqual(['foo'])
+    })
   })
 })
