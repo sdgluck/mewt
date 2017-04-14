@@ -42,6 +42,8 @@ function mewt (target) {
     throw new Error('mewt accepts array or object')
   }
 
+  target = clone(target)
+
   return new Proxy(target, {
     get (_, prop) {
       return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
@@ -50,10 +52,6 @@ function mewt (target) {
     deleteProperty: mutationTrapError,
     setPrototypeOf: mutationTrapError
   })
-  
-  target = clone(target)
-
-  return new Proxy(target, proxyHandler)
 }
 
 module.exports = mewt
