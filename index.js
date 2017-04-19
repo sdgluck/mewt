@@ -1,26 +1,22 @@
 /** @returns {Array|Object} */
 function mewt (target) {
-  const multiRet = 'push pop shift unshift'
-  const mutArrMethods = 'reverse sort splice fill copyWithin'
-  const nonMutArrMethods = 'filter map concat slice'
-  const mutationTraps = ['setPrototypeOf', 'defineProperty', 'deleteProperty']
-
   const isA = Array.isArray(target)
   const clone = isA ? v => [...v] : v => Object.assign({}, v)
 
-  const mutationTrapError = (isA) => {
+  const mutationTrapError = () => {
     throw new Error(`${isA ? 'array' : 'object'} is immutable`)
   }
 
   const override = prop => (...args) => {
-    const mutMethod = mutArrMethods.includes(prop)
-    const nonMutMethod = nonMutArrMethods.includes(prop)
+    const multiRet = 'push pop shift unshift'.includes(prop)
+    const mutMethod = 'reverse sort splice fill copyWithin'.includes(prop)
+    const nonMutMethod = 'filter map concat slice'.includes(prop)
 
     const cl = nonMutMethod ? target : clone(target)
     const res = cl[prop](...args)
     const wrappedRes = (mutMethod || nonMutMethod) ? mewt(res) : res
 
-    return multiRet.includes(prop) ? [wrappedRes, mewt(cl)] : wrappedRes
+    return multiRet ? [wrappedRes, mewt(cl)] : wrappedRes
   }
 
   const api = {
@@ -31,7 +27,10 @@ function mewt (target) {
     },
     $unset (prop) {
       if (isA && Number.isInteger(prop) && prop >= 0) {
-        return mewt(target.slice(0, prop).concat(target.slice(prop + 1)))
+        return mewt([
+          ...target.slice(0, prop),
+          ...target.slice(prop + 1)
+        ])
       }
       const newObj = clone(target)
       delete newObj[prop]
@@ -43,19 +42,16 @@ function mewt (target) {
     throw new Error('mewt accepts array or object')
   }
 
-  let proxyHandler = {
-    get: (_, prop) => {
-      return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
-    }
-  }
-
-  mutationTraps.forEach((key) => {
-    proxyHandler[key] = mutationTrapError
-  })
-
   target = clone(target)
 
-  return new Proxy(target, proxyHandler)
+  return new Proxy(target, {
+    get (_, prop) {
+      return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
+    },
+    defineProperty: mutationTrapError,
+    deleteProperty: mutationTrapError,
+    setPrototypeOf: mutationTrapError
+  })
 }
 
 module.exports = mewt
