@@ -1,41 +1,40 @@
 /** @returns {Array|Object} */
-module.exports = function m (target) {
-  let multiRet = 'push pop shift unshift'
-  let mutArrMethods = 'reverse sort splice fill copyWithin'
-  let nonMutArrMethods = 'filter map concat slice'
-  let mutationTraps = ['setPrototypeOf', 'defineProperty', 'deleteProperty']
+module.exports = function mewt (target) {
+  const isA = Array.isArray(target)
+  const clone = isA ? v => [...v] : v => Object.assign({}, v)
 
-  let isA = Array.isArray(target)
-  let clone = isA ? v => [...v] : v => Object.assign({}, v)
-
-  let mutationTrapError = (isA) => {
-    throw new Error(`${isA ? 'arr' : 'obj'} is immutable`)
+  const mutationTrapError = () => {
+    throw new Error(`${isA ? 'array' : 'object'} is immutable`)
   }
 
-  let override = prop => (...args) => {
-    let mutMethod = mutArrMethods.includes(prop)
-    let nonMutMethod = nonMutArrMethods.includes(prop)
+  const override = prop => (...args) => {
+    const multiRet = 'push pop shift unshift'.includes(prop)
+    const mutMethod = 'reverse sort splice fill copyWithin'.includes(prop)
+    const nonMutMethod = 'filter map concat slice'.includes(prop)
 
-    let cl = nonMutMethod ? target : clone(target)
-    let res = cl[prop](...args)
-    let wrappedRes = (mutMethod || nonMutMethod) ? m(res) : res
+    const cl = nonMutMethod ? target : clone(target)
+    const res = cl[prop](...args)
+    const wrappedRes = (mutMethod || nonMutMethod) ? mewt(res) : res
 
-    return multiRet.includes(prop) ? [wrappedRes, m(cl)] : wrappedRes
+    return multiRet ? [wrappedRes, mewt(cl)] : wrappedRes
   }
 
-  let api = {
+  const api = {
     $set (prop, val) {
-      let newObj = clone(target)
+      const newObj = clone(target)
       newObj[prop] = val
-      return m(newObj)
+      return mewt(newObj)
     },
     $unset (prop) {
       if (isA && Number.isInteger(prop) && prop >= 0) {
-        return m(target.slice(0, prop).concat(target.slice(prop + 1)))
+        return mewt([
+          ...target.slice(0, prop),
+          ...target.slice(prop + 1)
+        ])
       }
-      let newObj = clone(target)
+      const newObj = clone(target)
       delete newObj[prop]
-      return m(newObj)
+      return mewt(newObj)
     }
   }
 
@@ -43,25 +42,22 @@ module.exports = function m (target) {
     throw new Error('mewt accepts array or object')
   }
 
-  let proxyHandler = {
-    get: (_, prop) => {
-      return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
-    }
-  }
-
-  mutationTraps.forEach((key) => {
-    proxyHandler[key] = mutationTrapError
-  })
-
   target = (function df (o) {
     let it = isA ? Object.keys : Object.getOwnPropertyNames
     return it(isA ? [...o] : o).reduce((no, k) => {
       let v = o[k]
-      if (v && typeof v === 'object') no[k] = m(v)
+      if (v && typeof v === 'object') no[k] = mewt(v)
       else no[k] = v
       return no
     }, isA ? [] : {})
-  })(target)
+  })(clone(target))
 
-  return new Proxy(target, proxyHandler)
+  return new Proxy(target, {
+    get (_, prop) {
+      return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
+    },
+    defineProperty: mutationTrapError,
+    deleteProperty: mutationTrapError,
+    setPrototypeOf: mutationTrapError
+  })
 }
