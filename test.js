@@ -58,6 +58,11 @@ describe('mewt', () => {
       expect(() => a[0] = 'Lodger').toThrowError(/immutable/)
     })
 
+    it('should throw on nested mutation', () => {
+      const a = mewt([{}])
+      expect(() => a[0].title = 'Lodger').toThrowError(/immutable/)
+    })
+
     it('should have $set & $unset', () => {
       const a = mewt([])
       assertMewt(a)
@@ -212,6 +217,11 @@ describe('mewt', () => {
     it('should throw on mutation', () => {
       const o = mewt({})
       expect(() => o.track = 'The Promise').toThrowError(/immutable/)
+    })
+
+    it('should throw on nested mutation', () => {
+      const o = mewt({track: {}})
+      expect(() => o.track.title = 'The Promise').toThrowError(/immutable/)
     })
 
     it('should throw on Object.defineProperty', () => {

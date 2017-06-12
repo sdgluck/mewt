@@ -1,5 +1,5 @@
 /** @returns {Array|Object} */
-function mewt (target) {
+module.exports = function mewt (target) {
   const isA = Array.isArray(target)
   const clone = isA ? v => [...v] : v => Object.assign({}, v)
 
@@ -42,7 +42,15 @@ function mewt (target) {
     throw new Error('mewt accepts array or object')
   }
 
-  target = clone(target)
+  target = (function df (o) {
+    let it = isA ? Object.keys : Object.getOwnPropertyNames
+    return it(isA ? [...o] : o).reduce((no, k) => {
+      let v = o[k]
+      if (v && typeof v === 'object') no[k] = mewt(v)
+      else no[k] = v
+      return no
+    }, isA ? [] : {})
+  })(clone(target))
 
   return new Proxy(target, {
     get (_, prop) {
@@ -53,5 +61,3 @@ function mewt (target) {
     setPrototypeOf: mutationTrapError
   })
 }
-
-module.exports = mewt
