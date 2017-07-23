@@ -33,7 +33,7 @@ let M = module.exports = (parent, targetPath = []) => {
         : o(multiPurpose)
           ? clone(multiPurpose)
           : multiPurpose,
-      /*return*/newObj
+      /* return */newObj
     ), a(obj) ? [] : {}) : obj
 
   let mutationTrapError = () => {
@@ -59,7 +59,7 @@ let M = module.exports = (parent, targetPath = []) => {
       newObj[key] = o(target[key])
         ? M(parent, [...targetPath, key])
         : target[key],
-      /*return*/newObj
+      /* return */newObj
     ), a(parent) ? [] : {})
   }
 
