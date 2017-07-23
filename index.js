@@ -22,26 +22,6 @@ let M = module.exports = (parent, targetPath = []) => {
     obj[targetPath[--multiPurpose]] = value
   }
 
-  /*
-  let getTarget = (obj) => {
-    let pathClone = [...targetPath]
-    let target = obj
-    while (pathClone.length) {
-      target = obj[pathClone.pop()]
-    }
-    return target
-  }
-
-  let setTarget = (obj, value) => {
-    let pathClone = [...targetPath]
-    let target = obj
-    while (pathClone.length > 1) {
-      target = obj[pathClone.pop()]
-    }
-    obj[pathClone.pop()] = value
-  }
-  */
-
   let target = getOrSetTarget(parent)
   let isTargetArray = a(target)
 
