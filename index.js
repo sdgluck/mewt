@@ -1,57 +1,99 @@
+let a = Array.isArray
+let o = v => typeof v === 'object'
+let k = v => a(v)
+  ? Object.keys([...v]) // use spread to preserve holes in array
+  : Object.keys(v)
+
 /** @returns {Array|Object} */
-function mewt (target) {
-  const isA = Array.isArray(target)
-  const clone = isA ? v => [...v] : v => Object.assign({}, v)
-
-  const mutationTrapError = () => {
-    throw new Error(`${isA ? 'array' : 'object'} is immutable`)
+let M = module.exports = (parent, targetPath = []) => {
+  if (typeof parent !== 'object') {
+    throw new Error('expect arr|obj')
   }
 
-  const override = prop => (...args) => {
-    const multiRet = 'push pop shift unshift'.includes(prop)
-    const mutMethod = 'reverse sort splice fill copyWithin'.includes(prop)
-    const nonMutMethod = 'filter map concat slice'.includes(prop)
+  // we re-use this in order to reduce the number of let declarations
+  let multiPurpose
 
-    const cl = nonMutMethod ? target : clone(target)
-    const res = cl[prop](...args)
-    const wrappedRes = (mutMethod || nonMutMethod) ? mewt(res) : res
-
-    return multiRet ? [wrappedRes, mewt(cl)] : wrappedRes
-  }
-
-  const api = {
-    $set (prop, val) {
-      const newObj = clone(target)
-      newObj[prop] = val
-      return mewt(newObj)
-    },
-    $unset (prop) {
-      if (isA && Number.isInteger(prop) && prop >= 0) {
-        return mewt([
-          ...target.slice(0, prop),
-          ...target.slice(prop + 1)
-        ])
-      }
-      const newObj = clone(target)
-      delete newObj[prop]
-      return mewt(newObj)
+  let getOrSetTarget = (obj, value) => {
+    multiPurpose = targetPath.length
+    for (;multiPurpose > (value ? 1 : 0);) {
+      obj = obj[targetPath[--multiPurpose]]
     }
+    if (!value) return obj
+    obj[targetPath[--multiPurpose]] = value
   }
 
-  if (typeof target !== 'object' || !target) {
-    throw new Error('mewt accepts array or object')
+  let target = getOrSetTarget(parent)
+  let isTargetArray = a(target)
+
+  let clone = (obj = parent) =>
+    o(obj) ? k(obj).reduce((newObj, key) => (
+      multiPurpose = obj[key],
+      newObj[key] = a(multiPurpose)
+        ? multiPurpose.map(clone)
+        : o(multiPurpose)
+          ? clone(multiPurpose)
+          : multiPurpose,
+      /* return */newObj
+    ), a(obj) ? [] : {}) : obj
+
+  let mutationTrapError = () => {
+    throw new Error((isTargetArray ? 'arr' : 'obj') + ' immutable')
   }
 
-  target = clone(target)
+  let override = prop => (...args) => {
+    let mutMethod = /reverse|sort|splice|fill|copyWithin/.test(prop)
+    let nonMutMethod = /filter|map|concat|slice/.test(prop)
+
+    let cl = nonMutMethod ? parent : clone()
+    let res = getOrSetTarget(cl)[prop](...args)
+
+    // final result
+    multiPurpose = mutMethod || nonMutMethod ? M(res) : res
+
+    return /push|pop|shift|unshift/.test(prop)
+      ? [multiPurpose, M(cl)] : multiPurpose
+  }
+
+  if (!targetPath.length) {
+    parent = k(parent).reduce((newObj, key) => (
+      newObj[key] = o(target[key])
+        ? M(parent, [...targetPath, key])
+        : target[key],
+      /* return */newObj
+    ), a(parent) ? [] : {})
+  }
 
   return new Proxy(target, {
     get (_, prop) {
-      return api[prop] || (target[prop] && ({}.hasOwnProperty.call(target, prop) ? target[prop] : override(prop)))
+      let parentClone
+      multiPurpose = getOrSetTarget(parent)
+      return {
+        $set (prop, val) {
+          parentClone = clone()
+          multiPurpose = getOrSetTarget(parentClone)
+          multiPurpose[prop] = val
+          return M(parentClone)
+        },
+        $unset (prop) {
+          parentClone = clone()
+          if (isTargetArray && !(prop % 1) && prop >= 0) {
+            multiPurpose = [
+              ...parentClone.slice(0, prop),
+              ...parentClone.slice(prop + 1)
+            ]
+            if (targetPath.length) {
+              getOrSetTarget(parentClone, multiPurpose)
+              return M(parentClone)
+            }
+            return M(multiPurpose)
+          }
+          delete getOrSetTarget(parentClone)[prop]
+          return M(parentClone)
+        }
+      }[prop] || multiPurpose[prop] && ({}.hasOwnProperty.call(multiPurpose, prop) ? multiPurpose[prop] : override(prop))
     },
     defineProperty: mutationTrapError,
     deleteProperty: mutationTrapError,
     setPrototypeOf: mutationTrapError
   })
 }
-
-module.exports = mewt

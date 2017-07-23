@@ -1,3 +1,8 @@
 {
-  "extends": "standard"
+  "extends": "standard",
+  "rules": {
+    "no-return-assign": "off",
+    "no-sequences": "off",
+    "no-mixed-operators": "off"
+  }
 }

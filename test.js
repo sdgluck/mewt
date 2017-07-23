@@ -16,32 +16,32 @@ describe('mewt', () => {
 
   describe('should throw without object or array type', () => {
     it('should throw when undefined given', () => {
-      expect(() => mewt()).toThrowError(/accepts array or object/)
+      expect(() => mewt()).toThrowError(/expect arr|object/)
     })
 
     it('should throw when null given', () => {
-      expect(() => mewt(null)).toThrowError(/accepts array or object/)
+      expect(() => mewt(null)).toThrowError(/expect arr|object/)
     })
 
     it('should throw when string given', () => {
-      expect(() => mewt('foo')).toThrowError(/accepts array or object/)
+      expect(() => mewt('foo')).toThrowError(/expect arr|object/)
     })
 
     it('should throw when number given', () => {
-      expect(() => mewt(123)).toThrowError(/accepts array or object/)
+      expect(() => mewt(123)).toThrowError(/expect arr|object/)
     })
 
     it('should throw when boolean given', () => {
-      expect(() => mewt(true)).toThrowError(/accepts array or object/)
-      expect(() => mewt(false)).toThrowError(/accepts array or object/)
+      expect(() => mewt(true)).toThrowError(/expect arr|object/)
+      expect(() => mewt(false)).toThrowError(/expect arr|object/)
     })
 
     it('should throw when function given', () => {
-      expect(() => mewt(() => { })).toThrowError(/accepts array or object/)
+      expect(() => mewt(() => {})).toThrowError(/expect arr|object/)
     })
 
     it('should throw when Symbol given', () => {
-      expect(() => mewt(Symbol('foo'))).toThrowError(/accepts array or object/)
+      expect(() => mewt(Symbol('foo'))).toThrowError(/expect arr|object/)
     })
   })
 
@@ -56,6 +56,21 @@ describe('mewt', () => {
     it('should throw on mutation', () => {
       const a = mewt([])
       expect(() => a[0] = 'Lodger').toThrowError(/immutable/)
+    })
+
+    it('should throw on nested mutation', () => {
+      const a = mewt([{}])
+      expect(() => a[0].title = 'Lodger').toThrowError(/immutable/)
+    })
+
+    it('should create new mewt on child $set', () => {
+      const a = mewt([{}])
+      const b = a[0].$set('title', 'Lodger')
+      expect(a).not.toBe(b)
+      expect(a[0]).not.toBe(b[0])
+      expect(a[0]).toEqual({})
+      expect(b[0]).toEqual({title: 'Lodger'})
+      assertMewt(b)
     })
 
     it('should have $set & $unset', () => {
@@ -90,6 +105,7 @@ describe('mewt', () => {
         .$set(-1, 42)
         .$unset(-1)
         .$unset('foo')
+      expect(n).not.toBe(a)
       expect(n).toEqual([1, 2, 3])
     })
 
@@ -212,6 +228,21 @@ describe('mewt', () => {
     it('should throw on mutation', () => {
       const o = mewt({})
       expect(() => o.track = 'The Promise').toThrowError(/immutable/)
+    })
+
+    it('should throw on nested mutation', () => {
+      const o = mewt({track: {}})
+      expect(() => o.track.title = 'The Promise').toThrowError(/immutable/)
+    })
+
+    it('should create new mewt on child $set', () => {
+      const a = mewt({cat: {name: 'Top'}})
+      const b = a.cat.$set('name', 'Pushkin')
+      expect(a).not.toBe(b)
+      expect(a.cat).not.toBe(b.cat)
+      expect(a.cat.name).toBe('Top')
+      expect(b.cat.name).toBe('Pushkin')
+      assertMewt(b)
     })
 
     it('should throw on Object.defineProperty', () => {
