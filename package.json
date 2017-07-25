@@ -1,10 +1,10 @@
 {
   "name": "mewt",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Immutability in under one kilobyte",
   "main": "lib/index.js",
   "scripts": {
-    "build": "rimraf lib && babili index.js -d lib",
+    "build": "rimraf lib && babel index.js -d lib",
     "lint": "eslint index.js",
     "test": "npm run build && jest",
     "prepublishOnly": "npm run lint && npm run build",
@@ -15,7 +15,9 @@
   "author": "Sam Gluck <sdgluck@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "babili": "0.0.12",
+    "babel-cli": "6.24.1",
+    "babel-core": "6.25.0",
+    "babel-preset-babili": "0.1.4",
     "eslint": "3.18.0",
     "eslint-config-standard": "7.1.0",
     "eslint-plugin-promise": "3.5.0",

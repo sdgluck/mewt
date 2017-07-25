@@ -53,6 +53,11 @@ describe('mewt', () => {
       expect(n).toEqual(a)
     })
 
+    it('should handle null, undefined, and array holes', () => {
+      const a = mewt([null, undefined, , ])
+      expect(() => a.forEach(v => v)).not.toThrow()
+    })
+
     it('should throw on mutation', () => {
       const a = mewt([])
       expect(() => a[0] = 'Lodger').toThrowError(/immutable/)
@@ -223,6 +228,11 @@ describe('mewt', () => {
       const o = {}
       const n = mewt(o)
       expect(o).not.toBe(n)
+    })
+
+    it('should handle null and undefined property values', () => {
+      const a = mewt({ a: null, b: undefined })
+      expect(() => Object.keys(a).forEach(k => a[k])).not.toThrow()
     })
 
     it('should throw on mutation', () => {
