@@ -2,8 +2,13 @@ let isArray = Array.isArray
 let isObject = v => typeof v === 'object' && v !== null
 let keys = v => Object.keys(isArray(v) ? [...v] : v) // use spread to preserve holes in array
 
-/** @returns {Array|Object} */
-let M = module.exports = (parent, targetPath = []) => {
+/**
+ * Create immutable array or object.
+ * @returns {Array|Object}
+ **/
+let mewt = module.exports = (parent, targetPath = []) => {
+  let multiPurpose // we re-use this in order to reduce the number of let declarations
+
   let getOrSetTarget = (obj, value) => {
     multiPurpose = targetPath.length
     while (multiPurpose > (value ? 1 : 0)) {
@@ -14,7 +19,6 @@ let M = module.exports = (parent, targetPath = []) => {
   }
 
   let target = getOrSetTarget(parent)
-  let multiPurpose // we re-use this in order to reduce the number of let declarations
   let parentClone
 
   let clone = (obj = parent) =>
@@ -40,10 +44,10 @@ let M = module.exports = (parent, targetPath = []) => {
     let res = getOrSetTarget(cl)[prop](...args)
 
     // final result
-    multiPurpose = mutMethod || nonMutMethod ? M(res) : res
+    multiPurpose = mutMethod || nonMutMethod ? mewt(res) : res
 
     return /push|pop|shift|unshift/.test(prop)
-      ? [multiPurpose, M(cl)] : multiPurpose
+      ? [multiPurpose, mewt(cl)] : multiPurpose
   }
 
   if (!isObject(parent)) {
@@ -55,7 +59,7 @@ let M = module.exports = (parent, targetPath = []) => {
   if (!targetPath.length) {
     parent = keys(parent).reduce((newObj, key) => (
       newObj[key] = isObject(target[key])
-        ? M(parent, [...targetPath, key])
+        ? mewt(parent, [...targetPath, key])
         : target[key],
       /* return */newObj
     ), isArray(parent) ? [] : {})
@@ -69,7 +73,7 @@ let M = module.exports = (parent, targetPath = []) => {
           parentClone = clone()
           multiPurpose = getOrSetTarget(parentClone)
           multiPurpose[prop] = val
-          return M(parentClone)
+          return mewt(parentClone)
         },
         $unset (prop) {
           parentClone = clone()
@@ -80,12 +84,12 @@ let M = module.exports = (parent, targetPath = []) => {
             ]
             if (targetPath.length) {
               getOrSetTarget(parentClone, multiPurpose)
-              return M(parentClone)
+              return mewt(parentClone)
             }
-            return M(multiPurpose)
+            return mewt(multiPurpose)
           }
           delete getOrSetTarget(parentClone)[prop]
-          return M(parentClone)
+          return mewt(parentClone)
         }
       }[prop] || multiPurpose[prop] && ({}.hasOwnProperty.call(multiPurpose, prop) ? multiPurpose[prop] : override(prop))
     },
